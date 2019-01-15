@@ -1,14 +1,14 @@
-import React, { Component } from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import firebase from './config/firebase';
-import NextGame from './components/NextGame/NextGame';
-import Roster from './components/Roster/Roster';
+import React, { Component } from "react";
+import { withStyles } from "@material-ui/core/styles";
+import firebase from "./config/firebase";
+import NextGame from "./components/NextGame/NextGame";
+import Roster from "./components/Roster/Roster";
 
 const styles = {
   root: {
-    backgroundColor: 'green',
-    color: 'white'
-  },
+    backgroundColor: "green",
+    color: "white"
+  }
 };
 
 const db = firebase.firestore();
@@ -17,14 +17,13 @@ db.settings({
 });
 
 class App extends Component {
-
   render() {
     return (
       <div className={this.props.classes.root}>
         BackSlash
         <div className="main-component">
-        <NextGame></NextGame>
-        <Roster></Roster>
+          <NextGame />
+          <Roster />
         </div>
       </div>
     );
