@@ -1,28 +1,34 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { withStyles } from '@material-ui/core/styles';
+import firebase from './config/firebase';
+import NextGame from './components/NextGame/NextGame';
+import Roster from './components/Roster/Roster';
+
+const styles = {
+  root: {
+    backgroundColor: 'green',
+    color: 'white'
+  },
+};
+
+const db = firebase.firestore();
+db.settings({
+  timestampsInSnapshots: true
+});
 
 class App extends Component {
+
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+      <div className={this.props.classes.root}>
+        BackSlash
+        <div className="main-component">
+        <NextGame></NextGame>
+        <Roster></Roster>
+        </div>
       </div>
     );
   }
 }
 
-export default App;
+export default withStyles(styles)(App);
