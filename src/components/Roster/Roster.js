@@ -30,7 +30,8 @@ class Roster extends Component {
             jerseyNumber: doc.data().jerseyNumber,
             jerseySize: doc.data().jerseySize,
             emailAddress: doc.data().emailAddress,
-            phoneNumber: doc.data().phoneNumber
+            phoneNumber: doc.data().phoneNumber,
+            status: doc.data().status
           });
         });
         this.setState({ Roster });
@@ -53,6 +54,7 @@ class Roster extends Component {
               Last Name: {player.lastName}
               Email: {player.emailAddress}
               Phone: {player.phoneNumber}
+              Status: {player.status}
             </div>
           );
         })}
