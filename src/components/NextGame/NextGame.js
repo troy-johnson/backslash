@@ -22,9 +22,10 @@ class NextGame extends Component {
 
   componentDidMount() {
     let filteredGames = {};
+
     db.collection("events")
-      // .where("endDate", ">=", Date.now() / 1000)
-      .doc("season139")
+      // TOOD: Refactor to dynamically get current season.
+      .doc("xkUGwB24DSspXg54qUNA")
       .get()
       .then(res => {
         filteredGames = res
