@@ -46,14 +46,11 @@ class Roster extends Component {
       <div className={this.props.classes.root}>
         ROSTER:
         {this.state.Roster.map(player => {
-          console.log('player', player)
           return (
             <div key={player.id}>
               id: {player.id}
               No.: {player.jerseyNumber}
               Name: {`${player.firstName} ${player.lastName}`}
-              {/* Email: {player.emailAddress}
-              Phone: {player.phoneNumber} */}
               Status: {player.status}
             </div>
           );

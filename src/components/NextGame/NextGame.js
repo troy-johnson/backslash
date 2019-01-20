@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import firebase from "../../config/firebase";
-// import { Roster } from "../Roster/Roster"
 
 const styles = {
   root: {
