@@ -44,7 +44,7 @@ class Login extends Component {
     return (
       <div className={this.props.classes.root}>
         Log In
-        {error && error.message ? error.message : ''}
+        {error && error.message ? error.message : ""}
         <form onSubmit={this.handleSubmit}>
           <input
             type="text"
@@ -67,4 +67,4 @@ class Login extends Component {
   }
 }
 
-export default withStyles(styles)(Login)
+export default withStyles(styles)(Login);

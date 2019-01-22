@@ -1,7 +1,10 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
-import { Redirect } from "react-router-dom";
 import firebase from "../../config/firebase";
+import AddPlayer from "../AddPlayer/AddPlayer";
+import Roster from "../Roster/Roster"
+// import * as PlayerService from "../../services/player";
+// import * as SeasonService from "../../services/season";
 
 const styles = {
   root: {
@@ -17,49 +20,22 @@ db.settings({
 
 class Admin extends Component {
   state = {
-    authenticated: false,
-    user: {
-      displayName: null,
-      photoURL: null,
-      email: null
-    }
+    roster: [],
+    error: null
   };
 
-  componentDidMount() {
-    firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        this.setState({
-          authenticated: true,
-          user: {
-            displayName: user.displayName,
-            photoURL: user.photoURL,
-            email: user.email
-          }
-        });
-      } else if (!user) {
-        this.setState({
-          authenticated: false,
-          user: {
-            displayName: null,
-            photoURL: null,
-            email: null
-          }
-        });
-      }
-    });
-  }
+  handleInputChange = event => {
+    console.log("event", event);
+    this.setState({ [event.target.name]: event.target.value });
+  };
 
   render() {
-    const { user, authenticated } = this.state;
-    // console.log('user', user)
-    // if (!authenticated) {
-    //   return <Redirect to="/" />;
-    // } else if (authenticated) {
-    //   console.log("user email", user.email);
-
-    // TODO: Redirect user to home if not logged in
-
-    return <div>Welcome {user.email}!</div>;
+    return (
+      <div className={this.props.classes.root}>
+        <Roster admin={true} />
+        <AddPlayer />
+      </div>
+    );
   }
 }
 
