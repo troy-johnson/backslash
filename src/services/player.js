@@ -45,7 +45,7 @@ export const upsertPlayer = player => {
         jerseySize: player.jerseySize,
         status: player.status
       }).catch(err => {
-        return err;
+        console.log(`Error: ${err}`)
       });
   } else {
     db.collection("players")
@@ -59,7 +59,7 @@ export const upsertPlayer = player => {
         jerseySize: player.jerseySize,
         status: player.status
       }).catch(err => {
-        return err;
+        console.log(`Error: ${err}`)
       });
   }
 };

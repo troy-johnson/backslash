@@ -19,34 +19,31 @@ class Roster extends Component {
   state = { roster: [] };
 
   componentDidMount() {
-    db.collection("players")
-      .get()
-      .then(querySnapshot => {
-        const roster = [];
-        querySnapshot.forEach(doc => {
-          roster.push({
-            id: doc.id,
-            firstName: doc.data().firstName,
-            lastName: doc.data().lastName,
-            jerseyNumber: doc.data().jerseyNumber,
-            jerseySize: doc.data().jerseySize,
-            emailAddress: doc.data().emailAddress,
-            phoneNumber: doc.data().phoneNumber,
-            status: doc.data().status
-          });
+    this.unsubscribe = db.collection("players").onSnapshot(res => {
+      const roster = [];
+      res.forEach(doc => {
+        roster.push({
+          id: doc.id,
+          firstName: doc.data().firstName,
+          lastName: doc.data().lastName,
+          jerseyNumber: doc.data().jerseyNumber,
+          jerseySize: doc.data().jerseySize,
+          email: doc.data().email,
+          phone: doc.data().phone,
+          status: doc.data().status
         });
-        this.setState({ roster: roster });
-      })
-      .catch(function(error) {
-        console.log("Error getting documents: ", error);
       });
-      // TODO: Move database call to service;
-      // TODO: The below wasn't re-rendering despite state updating
-      // const response = await PlayerService.getPlayers();
-      // const roster = await response;
-      // await console.log('cDM', roster)
-      // this.setState({ roster: roster });
-      // console.log('state', this.state.roster)
+      this.setState({ roster: roster });
+    }, (err) => {
+      console.log(`Error: ${err}`)
+    });
+    // TODO: Move database call to service;
+    // TODO: The below wasn't re-rendering despite state updating
+    // const response = await PlayerService.getPlayers();
+    // const roster = await response;
+    // await console.log('cDM', roster)
+    // this.setState({ roster: roster });
+    // console.log('state', this.state.roster)
   }
 
   render() {
@@ -56,16 +53,25 @@ class Roster extends Component {
         {this.state.roster.map(player => {
           return (
             <div key={player.id}>
-              id: {player.id}
-              No.: {player.jerseyNumber}
-              Name: {`${player.firstName} ${player.lastName}`}
-              Status: {player.status}
-              {this.props.admin ? 'Edit Player' : ''}
+              {`
+              No.: ${player.jerseyNumber}
+              Name: ${player.firstName} ${player.lastName}
+              Status: ${player.status}
+            `}
+              {this.props.admin
+                ? `Email: ${player.email} 
+                    Phone: ${player.phone} 
+                    Edit Player`
+                : ``}
             </div>
           );
         })}
       </div>
     );
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
   }
 }
 

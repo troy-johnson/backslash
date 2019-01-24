@@ -12,8 +12,6 @@ const styles = {
 class Logout extends Component {
   logOutUser = () => {
     firebase.auth().signOut();
-    console.log('logged out', firebase.auth().currentUser);
-    
   };
 
   render() {

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import firebase from "../../config/firebase";
-import * as PlayerService from "../../services/player";
+// import * as PlayerService from "../../services/player";
 
 const styles = {
   root: {
@@ -26,6 +26,7 @@ class AddPlayer extends Component {
       jerseySize: "",
       status: ""
     },
+    message: "",
     error: ""
   };
 
@@ -40,19 +41,46 @@ class AddPlayer extends Component {
 
   handleSubmit = event => {
     event.preventDefault();
-    const { player, error } = this.state;
-    console.log("player", player);
-    console.log("error", error);
-    PlayerService.upsertPlayer(player);
-    // TODO: Set state with response so roster updates.
+    const { player } = this.state;
+    db.collection("players")
+      .doc()
+      .set({
+        email: player.email,
+        phone: player.phone,
+        firstName: player.firstName,
+        lastName: player.lastName,
+        jerseyNumber: player.jerseyNumber,
+        jerseySize: player.jerseySize,
+        status: player.status
+      })
+      .then(() => {
+        this.setState({
+          message: `Player successfully created!`,
+          player: {
+            email: "",
+            phone: "",
+            firstName: "",
+            lastName: "",
+            jerseyNumber: "",
+            jerseySize: "",
+            status: ""
+          }
+        });
+      })
+      .catch(err => {
+        this.setState({
+          error: `Error: ${err}`
+        });
+      });
   };
 
   render() {
-    const { player, error } = this.state;
+    const { player, message, error } = this.state;
     return (
       <div className={this.props.classes.root}>
         Add Player
-        {error && error.message ? error.message : ""}
+        {error ? error : ""}
+        {message ? message : ""}
         <form onSubmit={this.handleSubmit}>
           {/* TODO: Add validation */}
           <input

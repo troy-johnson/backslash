@@ -16,83 +16,110 @@ db.settings({
 
 class NextGame extends Component {
   state = {
-    nextGame: {}
+    nextGame: {
+      gameNumber: null,
+      date: "",
+      time: "",
+      location: "",
+      opponent: "",
+      roster: [],
+      scratches: []
+    }
   };
 
   render() {
+    const { nextGame } = this.state;
     return (
       <div className={this.props.classes.root}>
-        NEXT GAME: Game No. {this.state.nextGame.gameNumber}
-        Date: {this.state.nextGame.date}
-        Time: {this.state.nextGame.time}
-        Location: {this.state.nextGame.location}
-        Opponent: {this.state.nextGame.opponent}
-        Roster: {
-          this.state.nextGame.roster ? this.state.nextGame.roster.map(player => {
-            if (player) {
+        NEXT GAME: Game No. {nextGame.gameNumber}
+        Date: {nextGame.date}
+        Time: {nextGame.time}
+        Location: {nextGame.location}
+        Opponent: {nextGame.opponent}
+        Roster:
+        {nextGame.roster
+          ? nextGame.roster.map(player => {
               return (
                 <div key={player.id}>
                   No.: {player.jerseyNumber}
-                  Name: {`${player.firstName} ${player.lastName}`}
+                  Name: {player.name}
                 </div>
               );
-            } else {
-              return null;
-            }
-          }) : ""
-        }
-        Scratches: {
-          this.state.nextGame.scratches ? this.state.nextGame.scratches.map(player => {
-            if (player) {
+            })
+          : ""}
+        Scratches:
+        {nextGame.scratches
+          ? nextGame.scratches.map(player => {
               return (
                 <div key={player.id}>
                   No.: {player.jerseyNumber}
-                  Name: {`${player.firstName} ${player.lastName}`}
+                  Name: {player.name}
                 </div>
               );
-            } else {
-              return null;
-            }
-          }) : ""
-        }
+            })
+          : ""}
       </div>
     );
   }
 
-  componentDidMount() {
-    let filteredGames = {};
-
-    db.collection("events")
-      // TOOD: Refactor to dynamically get current season.
+  async componentDidMount() {
+    const seasonRes = await db
+      .collection("events")
       .doc("xkUGwB24DSspXg54qUNA")
-      .get()
-      .then(res => {
-        filteredGames = res
-          .data()
-          .games.filter(game => {
-            if (game.date && game.date.seconds) {
-              return game.date.seconds >= Date.now() / 1000;
-            } else {
-              return null;
-            }
-          })
-          .sort((a, b) => {
-            return a.gameNumber - b.gameNumber;
-          });
-        this.setState({
-          nextGame: {
-            gameNumber: filteredGames[0].gameNumber,
-            date: new Date(filteredGames[0].date.seconds * 1000).toLocaleDateString(),
-            time: new Date(filteredGames[0].date.seconds * 1000).toLocaleTimeString(),
-            location: filteredGames[0].location,
-            opponent: filteredGames[0].opponent,
-            roster: filteredGames[0].roster,
-            scratches: filteredGames[0].scratches
-          }
-        });
+      .get();
+    const filteredGames = await seasonRes
+      .data()
+      .games.filter(game => {
+        if (game.date && game.date.seconds) {
+          return game.date.seconds >= Date.now() / 1000;
+        } else {
+          return null;
+        }
+      })
+      .sort((a, b) => {
+        return a.gameNumber - b.gameNumber;
       });
-  }
 
+    const docRef = db.collection("players");
+    const roster = [];
+    const scratches = [];
+
+    for (let i = 0; i < filteredGames[0].roster.length; i++) {
+      const playerRes = await docRef.doc(filteredGames[0].roster[i]).get();
+      const player = {
+        id: playerRes.id,
+        name: `${playerRes.data().firstName} ${playerRes.data().lastName}`,
+        jerseyNumber: playerRes.data().jerseyNumber
+      };
+      roster.push(player);
+    }
+
+    for (let i = 0; i < filteredGames[0].scratches.length; i++) {
+      const playerRes = await docRef.doc(filteredGames[0].scratches[i]).get();
+      const player = {
+        id: playerRes.id,
+        name: `${playerRes.data().firstName} ${playerRes.data().lastName}`,
+        jerseyNumber: playerRes.data().jerseyNumber
+      };
+      scratches.push(player);
+    }
+
+    this.setState({
+      nextGame: {
+        gameNumber: filteredGames[0].gameNumber,
+        date: new Date(
+          filteredGames[0].date.seconds * 1000
+        ).toLocaleDateString(),
+        time: new Date(
+          filteredGames[0].date.seconds * 1000
+        ).toLocaleTimeString(),
+        location: filteredGames[0].location,
+        opponent: filteredGames[0].opponent,
+        roster: roster,
+        scratches: scratches
+      }
+    });
+  }
 }
 
 export default withStyles(styles)(NextGame);

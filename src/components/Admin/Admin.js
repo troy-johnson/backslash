@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import firebase from "../../config/firebase";
 import AddPlayer from "../AddPlayer/AddPlayer";
-import Roster from "../Roster/Roster"
+import Roster from "../Roster/Roster";
+// import NextGame from "../NextGame/NextGame";
 // import * as PlayerService from "../../services/player";
 // import * as SeasonService from "../../services/season";
 
@@ -22,11 +23,6 @@ class Admin extends Component {
   state = {
     roster: [],
     error: null
-  };
-
-  handleInputChange = event => {
-    console.log("event", event);
-    this.setState({ [event.target.name]: event.target.value });
   };
 
   render() {
