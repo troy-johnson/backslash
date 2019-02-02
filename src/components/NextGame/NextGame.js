@@ -22,10 +22,31 @@ class NextGame extends Component {
       time: "",
       location: "",
       opponent: "",
-      roster: [],
+      gameRoster: [],
       scratches: []
-    }
+    },
+    fullRoster: []
   };
+
+  addPlayerToGameRoster(playerId) {
+    // Add player to game roster
+    // Remove player from state -> full roster
+  }
+
+  removePlayerFromGameRoster(playerId) {
+    // Remove player from game roster
+    // Add player to state -> full roster
+  }
+
+  addPlayerToGameScratches(playerId) {
+    // Add player to game scratches
+    // Remove player from state -> full roster
+  }
+
+  removePlayerFromGameScratches(playerId) {
+    // Remove player from game scratches
+    // Add player to state -> full roster
+  }
 
   render() {
     const { nextGame } = this.state;
@@ -36,9 +57,9 @@ class NextGame extends Component {
         Time: {nextGame.time}
         Location: {nextGame.location}
         Opponent: {nextGame.opponent}
-        Roster:
-        {nextGame.roster
-          ? nextGame.roster.map(player => {
+        Game Roster:
+        {nextGame.gameRoster
+          ? nextGame.gameRoster.map(player => {
               return (
                 <div key={player.id}>
                   No.: {player.jerseyNumber}
@@ -81,7 +102,7 @@ class NextGame extends Component {
       });
 
     const docRef = db.collection("players");
-    const roster = [];
+    const gameRoster = [];
     const scratches = [];
 
     for (let i = 0; i < filteredGames[0].roster.length; i++) {
@@ -91,7 +112,7 @@ class NextGame extends Component {
         name: `${playerRes.data().firstName} ${playerRes.data().lastName}`,
         jerseyNumber: playerRes.data().jerseyNumber
       };
-      roster.push(player);
+      gameRoster.push(player);
     }
 
     for (let i = 0; i < filteredGames[0].scratches.length; i++) {
@@ -115,9 +136,10 @@ class NextGame extends Component {
         ).toLocaleTimeString(),
         location: filteredGames[0].location,
         opponent: filteredGames[0].opponent,
-        roster: roster,
+        gameRoster: gameRoster,
         scratches: scratches
-      }
+      },
+      fullRoster: []
     });
   }
 }
