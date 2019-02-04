@@ -1,11 +1,14 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import firebase from "../../config/firebase";
+import Paper from "@material-ui/core/Paper";
+import Grid from "@material-ui/core/Grid";
+import { Typography } from "@material-ui/core";
 
 const styles = {
   root: {
-    backgroundColor: "blue",
-    color: "white"
+    // border: '1px solid lightblue',
+    textAlign: 'center'
   }
 };
 
@@ -28,22 +31,22 @@ class NextGame extends Component {
     fullRoster: []
   };
 
-  addPlayerToGameRoster(playerId) {
+  addPlayerToGameRoster(id) {
     // Add player to game roster
     // Remove player from state -> full roster
   }
 
-  removePlayerFromGameRoster(playerId) {
+  removePlayerFromGameRoster(id) {
     // Remove player from game roster
     // Add player to state -> full roster
   }
 
-  addPlayerToGameScratches(playerId) {
+  addPlayerToGameScratches(id) {
     // Add player to game scratches
     // Remove player from state -> full roster
   }
 
-  removePlayerFromGameScratches(playerId) {
+  removePlayerFromGameScratches(id) {
     // Remove player from game scratches
     // Add player to state -> full roster
   }
@@ -51,35 +54,56 @@ class NextGame extends Component {
   render() {
     const { nextGame } = this.state;
     return (
-      <div className={this.props.classes.root}>
-        NEXT GAME: Game No. {nextGame.gameNumber}
-        Date: {nextGame.date}
-        Time: {nextGame.time}
-        Location: {nextGame.location}
-        Opponent: {nextGame.opponent}
-        Game Roster:
-        {nextGame.gameRoster
-          ? nextGame.gameRoster.map(player => {
-              return (
-                <div key={player.id}>
-                  No.: {player.jerseyNumber}
-                  Name: {player.name}
-                </div>
-              );
-            })
-          : ""}
-        Scratches:
-        {nextGame.scratches
-          ? nextGame.scratches.map(player => {
-              return (
-                <div key={player.id}>
-                  No.: {player.jerseyNumber}
-                  Name: {player.name}
-                </div>
-              );
-            })
-          : ""}
-      </div>
+      <Grid className={this.props.classes.root} container spacing={24} justify="center">
+        <Grid item xs={12}>
+          <Typography variant="h2">
+            BackSlash vs. {nextGame.opponent}
+          </Typography>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Typography variant="h3">
+            {nextGame.date} at {nextGame.time}
+          </Typography>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Typography variant="h3">{nextGame.location}</Typography>
+        </Grid>
+
+        <Grid item xs={12} sm={6}>
+          <Typography variant="subtitle1">
+            GAME ROSTER:
+            {nextGame.gameRoster
+              ? nextGame.gameRoster.map(player => {
+                  return (
+                    <div key={player.id}>
+                      No.: {player.jerseyNumber}
+                      Name: {player.name}
+                    </div>
+                  );
+                })
+              : ""}
+          </Typography>
+        </Grid>
+
+        <Grid item xs={12} sm={6}>
+          <Typography variant="subtitle1">
+            SCRATCHES:
+            {nextGame.scratches
+              ? nextGame.scratches.map(player => {
+                  return (
+                    <div key={player.id}>
+                      No.: {player.jerseyNumber}
+                      Name: {player.name}
+                    </div>
+                  );
+                })
+              : ""}
+          </Typography>
+        </Grid>
+
+      </Grid>
     );
   }
 
@@ -125,6 +149,20 @@ class NextGame extends Component {
       scratches.push(player);
     }
 
+    const unassignedRoster = [];
+
+    const rosterRes = await docRef.get();
+    rosterRes.forEach(doc => {
+      let player =
+        gameRoster.find(e => e.id === doc.data().id) ||
+        scratches.find(e => e.id === doc.data().id);
+      if (doc.data().status === "Active" && !player) {
+        unassignedRoster.push(doc.data());
+      }
+    });
+
+    console.log("unassignedRoster", unassignedRoster);
+
     this.setState({
       nextGame: {
         gameNumber: filteredGames[0].gameNumber,
@@ -137,9 +175,9 @@ class NextGame extends Component {
         location: filteredGames[0].location,
         opponent: filteredGames[0].opponent,
         gameRoster: gameRoster,
-        scratches: scratches
-      },
-      fullRoster: []
+        scratches: scratches,
+        unassignedRoster: unassignedRoster
+      }
     });
   }
 }

@@ -1,14 +1,14 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
+import Grid from "@material-ui/core/Grid";
+
 import firebase from "../../config/firebase";
-import NextGame from "../NextGame/NextGame"
-import Roster from "../Roster/Roster"
+
+import NextGame from "../NextGame/NextGame";
+import Roster from "../Roster/Roster";
 
 const styles = {
-  root: {
-    backgroundColor: "red",
-    color: "white"
-  }
+  root: {}
 };
 
 const db = firebase.firestore();
@@ -21,10 +21,16 @@ class Home extends Component {
 
   render() {
     return (
-      <div className={this.props.classes.root}>
+      <Grid
+        className={this.props.classes.root}
+        container
+        spacing={24}
+        justify="center"
+        alignItems="center"
+      >
         <NextGame />
         <Roster />
-      </div>
+      </Grid>
     );
   }
 }

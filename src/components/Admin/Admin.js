@@ -8,10 +8,7 @@ import NextGame from "../NextGame/NextGame";
 // import * as SeasonService from "../../services/season";
 
 const styles = {
-  root: {
-    backgroundColor: "green",
-    color: "white"
-  }
+  root: {}
 };
 
 const db = firebase.firestore();

@@ -3,10 +3,7 @@ import { withStyles } from "@material-ui/core/styles";
 import firebase from "../../config/firebase";
 
 const styles = {
-  root: {
-    backgroundColor: "purple",
-    color: "white"
-  }
+  root: {}
 };
 
 const db = firebase.firestore();

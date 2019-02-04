@@ -4,10 +4,7 @@ import firebase from "../../config/firebase";
 // import * as PlayerService from "../../services/player";
 
 const styles = {
-  root: {
-    backgroundColor: "purple",
-    color: "white"
-  }
+  root: {}
 };
 
 const db = firebase.firestore();

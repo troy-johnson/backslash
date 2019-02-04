@@ -1,12 +1,14 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import firebase from "../../config/firebase";
+import Grid from "@material-ui/core/Grid";
+import { Typography } from "@material-ui/core";
 // import * as PlayerService from "../../services/player";
 
 const styles = {
   root: {
-    backgroundColor: "red",
-    color: "white"
+    // border: '1px solid pink',
+    textAlign: 'center'
   }
 };
 
@@ -52,46 +54,54 @@ class Roster extends Component {
 
   render() {
     return (
-      <div className={this.props.classes.root}>
-        ACTIVE ROSTER:
-        {this.state.roster
-          .filter(e => e.status === "Active")
-          .map(player => {
-            return (
-              <div key={player.id}>
-                {`
-              No.: ${player.jerseyNumber || '00'}
+      <Grid className={this.props.classes.root} container spacing={24}>
+        <Grid item xs={12} sm={6}>
+          <Typography variant="subtitle1">
+            ACTIVE ROSTER:
+            {this.state.roster
+              .filter(e => e.status === "Active")
+              .map(player => {
+                return (
+                  <div key={player.id}>
+                    {`
+              No.: ${player.jerseyNumber || "00"}
               Name: ${player.firstName} ${player.lastName}
               Status: ${player.status}
             `}
-                {this.props.admin
-                  ? `Email: ${player.email} 
+                    {this.props.admin
+                      ? `Email: ${player.email} 
                     Phone: ${player.phone} 
                     Edit Player`
-                  : ``}
-              </div>
-            );
-          })}
-        INACTIVE ROSTER:
-        {this.state.roster
-          .filter(e => e.status === "Inactive")
-          .map(player => {
-            return (
-              <div key={player.id}>
-                {`
-              No.: ${player.jerseyNumber || '00'}
+                      : ``}
+                  </div>
+                );
+              })}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <Typography variant="subtitle1">
+            INACTIVE ROSTER:
+            {this.state.roster
+              .filter(e => e.status === "Inactive")
+              .map(player => {
+                return (
+                  <div key={player.id}>
+                    {`
+              No.: ${player.jerseyNumber || "00"}
               Name: ${player.firstName} ${player.lastName}
               Status: ${player.status}
             `}
-                {this.props.admin
-                  ? `Email: ${player.email} 
+                    {this.props.admin
+                      ? `Email: ${player.email} 
                     Phone: ${player.phone} 
                     Edit Player`
-                  : ``}
-              </div>
-            );
-          })}
-      </div>
+                      : ``}
+                  </div>
+                );
+              })}
+          </Typography>
+        </Grid>
+      </Grid>
     );
   }
 
