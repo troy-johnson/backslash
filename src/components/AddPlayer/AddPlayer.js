@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import firebase from "../../config/firebase";
+import Grid from "@material-ui/core/Grid";
+import { Typography } from "@material-ui/core";
 // import * as PlayerService from "../../services/player";
 
 const styles = {
@@ -74,8 +76,8 @@ class AddPlayer extends Component {
   render() {
     const { player, message, error } = this.state;
     return (
-      <div className={this.props.classes.root}>
-        Add Player
+      <Grid className={this.props.classes.root} container spacing={24}>
+        <Typography>Add Player</Typography>
         {error ? error : ""}
         {message ? message : ""}
         <form onSubmit={this.handleSubmit}>
@@ -131,7 +133,7 @@ class AddPlayer extends Component {
           />
           <button children="Add Player" />
         </form>
-      </div>
+        </Grid>
     );
   }
 }

@@ -1,14 +1,15 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import firebase from "../../config/firebase";
-import Paper from "@material-ui/core/Paper";
+// import Paper from "@material-ui/core/Paper";
+import EditIcon from "@material-ui/icons/Edit";
 import Grid from "@material-ui/core/Grid";
-import { Typography } from "@material-ui/core";
+import { Typography, IconButton } from "@material-ui/core";
 
 const styles = {
   root: {
     // border: '1px solid lightblue',
-    textAlign: 'center'
+    textAlign: "center"
   }
 };
 
@@ -26,53 +27,59 @@ class NextGame extends Component {
       location: "",
       opponent: "",
       gameRoster: [],
-      scratches: []
-    },
-    fullRoster: []
+      scratches: [],
+      unassigned: []
+    }
   };
 
   addPlayerToGameRoster(id) {
     // Add player to game roster
-    // Remove player from state -> full roster
-  }
-
-  removePlayerFromGameRoster(id) {
-    // Remove player from game roster
-    // Add player to state -> full roster
+    // Add player to state -> game roster
+    // Remove player from game scratches
+    // Remove player from state -> unassigned
   }
 
   addPlayerToGameScratches(id) {
     // Add player to game scratches
+    // Add player to state -> scratches
+    // Remove player from game roster
     // Remove player from state -> full roster
-  }
-
-  removePlayerFromGameScratches(id) {
-    // Remove player from game scratches
-    // Add player to state -> full roster
   }
 
   render() {
     const { nextGame } = this.state;
+    const { classes, admin } = this.props;
+
     return (
-      <Grid className={this.props.classes.root} container spacing={24} justify="center">
+      <Grid className={classes.root} container spacing={24} justify="center">
+        <div>
+          {admin ? (
+            <IconButton>
+              <EditIcon />
+            </IconButton>
+          ) : (
+            ""
+          )}
+        </div>
+
         <Grid item xs={12}>
-          <Typography variant="h2">
+          <Typography variant="h4">
             BackSlash vs. {nextGame.opponent}
           </Typography>
         </Grid>
 
         <Grid item xs={12}>
-          <Typography variant="h3">
+          <Typography variant="h6">
             {nextGame.date} at {nextGame.time}
           </Typography>
         </Grid>
 
         <Grid item xs={12}>
-          <Typography variant="h3">{nextGame.location}</Typography>
+          <Typography variant="h6">{nextGame.location}</Typography>
         </Grid>
 
-        <Grid item xs={12} sm={6}>
-          <Typography variant="subtitle1">
+        <Grid item xs={6} sm={4}>
+          <Typography variant="subtitle2">
             GAME ROSTER:
             {nextGame.gameRoster
               ? nextGame.gameRoster.map(player => {
@@ -87,8 +94,8 @@ class NextGame extends Component {
           </Typography>
         </Grid>
 
-        <Grid item xs={12} sm={6}>
-          <Typography variant="subtitle1">
+        <Grid item xs={6} sm={4}>
+          <Typography variant="subtitle2">
             SCRATCHES:
             {nextGame.scratches
               ? nextGame.scratches.map(player => {
@@ -102,7 +109,6 @@ class NextGame extends Component {
               : ""}
           </Typography>
         </Grid>
-
       </Grid>
     );
   }
@@ -149,7 +155,7 @@ class NextGame extends Component {
       scratches.push(player);
     }
 
-    const unassignedRoster = [];
+    const unassigned = [];
 
     const rosterRes = await docRef.get();
     rosterRes.forEach(doc => {
@@ -157,11 +163,14 @@ class NextGame extends Component {
         gameRoster.find(e => e.id === doc.data().id) ||
         scratches.find(e => e.id === doc.data().id);
       if (doc.data().status === "Active" && !player) {
-        unassignedRoster.push(doc.data());
+        let unassignedPlayer = {
+          ...doc.data(),
+          id: doc.id,
+          name: `${doc.data().firstName} ${doc.data().lastName}`
+        };
+        unassigned.push(unassignedPlayer);
       }
     });
-
-    console.log("unassignedRoster", unassignedRoster);
 
     this.setState({
       nextGame: {
@@ -176,7 +185,7 @@ class NextGame extends Component {
         opponent: filteredGames[0].opponent,
         gameRoster: gameRoster,
         scratches: scratches,
-        unassignedRoster: unassignedRoster
+        unassigned: unassigned
       }
     });
   }

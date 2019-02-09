@@ -5,7 +5,8 @@ import Grid from "@material-ui/core/Grid";
 import firebase from "../../config/firebase";
 
 import NextGame from "../NextGame/NextGame";
-import Roster from "../Roster/Roster";
+// import Roster from "../Roster/Roster";
+import Seasons from "../Seasons/Seasons";
 
 const styles = {
   root: {}
@@ -29,7 +30,8 @@ class Home extends Component {
         alignItems="center"
       >
         <NextGame />
-        <Roster />
+        <Seasons />
+        {/* <Roster /> */}
       </Grid>
     );
   }

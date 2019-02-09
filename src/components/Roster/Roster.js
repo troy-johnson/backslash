@@ -3,12 +3,13 @@ import { withStyles } from "@material-ui/core/styles";
 import firebase from "../../config/firebase";
 import Grid from "@material-ui/core/Grid";
 import { Typography } from "@material-ui/core";
+import AddPlayer from '../AddPlayer/AddPlayer';
 // import * as PlayerService from "../../services/player";
 
 const styles = {
   root: {
     // border: '1px solid pink',
-    textAlign: 'center'
+    textAlign: "center"
   }
 };
 
@@ -99,8 +100,10 @@ class Roster extends Component {
                   </div>
                 );
               })}
+
           </Typography>
         </Grid>
+        {this.props.admin ? <AddPlayer /> : ''}
       </Grid>
     );
   }
