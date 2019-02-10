@@ -1,5 +1,8 @@
 import React, { Component } from "react";
+
 import { withStyles } from "@material-ui/core/styles";
+import Button from "@material-ui/core/Button";
+
 import firebase from "../../config/firebase";
 
 const styles = {
@@ -13,7 +16,9 @@ class Logout extends Component {
 
   render() {
     return (
-      <button onClick={this.logOutUser}>Log Out</button>
+      <Button variant="outlined" color="primary" onClick={this.logOutUser}>
+        Logout
+      </Button>
     );
   }
 }

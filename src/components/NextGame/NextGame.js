@@ -1,15 +1,27 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import firebase from "../../config/firebase";
-// import Paper from "@material-ui/core/Paper";
-import EditIcon from "@material-ui/icons/Edit";
+import Paper from "@material-ui/core/Paper";
+// import EditIcon from "@material-ui/icons/Edit";
 import Grid from "@material-ui/core/Grid";
-import { Typography, IconButton } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 
 const styles = {
   root: {
     // border: '1px solid lightblue',
-    textAlign: "center"
+    textAlign: "center",
+    margin: "15px"
+  },
+  nextGame: {
+    minWidth: "65%",
+    maxWidth: "100%"
+  },
+  players: {
+    marginTop: '7px',
+    marginBottom: '7px'
+  },
+  border: {
+    // border: "1px solid yellow"
   }
 };
 
@@ -20,6 +32,7 @@ db.settings({
 
 class NextGame extends Component {
   state = {
+    season: [],
     nextGame: {
       gameNumber: null,
       date: "",
@@ -32,83 +45,93 @@ class NextGame extends Component {
     }
   };
 
-  addPlayerToGameRoster(id) {
-    // Add player to game roster
-    // Add player to state -> game roster
-    // Remove player from game scratches
-    // Remove player from state -> unassigned
-  }
-
-  addPlayerToGameScratches(id) {
-    // Add player to game scratches
-    // Add player to state -> scratches
-    // Remove player from game roster
-    // Remove player from state -> full roster
-  }
-
   render() {
     const { nextGame } = this.state;
-    const { classes, admin } = this.props;
+    const { classes } = this.props;
+
+    const addPlayerToGameRoster = async (playerId, seasonId) => {
+      const { season, nextGame } = this.state
+      let roster = []
+      let scratches = []
+      console.log('season', season)
+      let game = season.games.find(e => e.gameNumber === nextGame.gameNumber)
+      console.log('game', game)
+      // await this.setState({
+      //   season.games
+      // })
+      // await db.collection("events")
+      //   .doc(seasonId)
+      //   .update({
+      //     games: games
+      //   }, { merge: true })
+  
+      // Add player to state -> game roster
+      // Remove player from game scratches
+      // Remove player from state -> unassigned
+    }
+  
+    const addPlayerToGameScratches = (id) => {
+      // Add player to game scratches
+      // Add player to state -> scratches
+      // Remove player from game roster
+      // Remove player from state -> full roster
+    }
 
     return (
-      <Grid className={classes.root} container spacing={24} justify="center">
-        <div>
-          {admin ? (
-            <IconButton>
-              <EditIcon />
-            </IconButton>
-          ) : (
-            ""
-          )}
-        </div>
+      <Grid className={classes.root} container direction="row" justify="center">
+        <Paper className={classes.nextGame}>
+          <Grid className={classes.border} item xs={12}>
+            <Typography variant="h4">
+              BackSlash vs. {nextGame.opponent}
+            </Typography>
+          </Grid>
 
-        <Grid item xs={12}>
-          <Typography variant="h4">
-            BackSlash vs. {nextGame.opponent}
-          </Typography>
-        </Grid>
+          <Grid className={classes.border} item xs={12}>
+            <Typography variant="h6">
+              {nextGame.date} at {nextGame.time}
+            </Typography>
+          </Grid>
 
-        <Grid item xs={12}>
-          <Typography variant="h6">
-            {nextGame.date} at {nextGame.time}
-          </Typography>
-        </Grid>
+          <Grid className={classes.border} item xs={12}>
+            <Typography variant="h6">{nextGame.location}</Typography>
+          </Grid>
 
-        <Grid item xs={12}>
-          <Typography variant="h6">{nextGame.location}</Typography>
-        </Grid>
+          {/* <button onClick={addPlayerToGameRoster}>Add player</button> */}
 
-        <Grid item xs={6} sm={4}>
-          <Typography variant="subtitle2">
-            GAME ROSTER:
-            {nextGame.gameRoster
-              ? nextGame.gameRoster.map(player => {
-                  return (
-                    <div key={player.id}>
-                      No.: {player.jerseyNumber}
-                      Name: {player.name}
-                    </div>
-                  );
-                })
-              : ""}
-          </Typography>
-        </Grid>
+          <Grid className={classes.players} container spacing={24}>
+            <Grid className={classes.border} item xs={6}>
+              <Typography variant="subtitle2">
+                GAME ROSTER:
+                {nextGame.gameRoster
+                  ? nextGame.gameRoster.map(player => {
+                      return (
+                        <div key={player.id}>
+                          No.: {player.jerseyNumber}
+                          Name: {player.name}
+                        </div>
+                      );
+                    })
+                  : ""}
+              </Typography>
+            </Grid>
 
-        <Grid item xs={6} sm={4}>
-          <Typography variant="subtitle2">
-            SCRATCHES:
-            {nextGame.scratches
-              ? nextGame.scratches.map(player => {
-                  return (
-                    <div key={player.id}>
-                      No.: {player.jerseyNumber}
-                      Name: {player.name}
-                    </div>
-                  );
-                })
-              : ""}
-          </Typography>
-        </Grid>
+            <Grid className={classes.border} item xs={6}>
+              <Typography variant="subtitle2">
+                SCRATCHES:
+                {nextGame.scratches
+                  ? nextGame.scratches.map(player => {
+                      return (
+                        <div key={player.id}>
+                          No.: {player.jerseyNumber}
+                          Name: {player.name}
+                        </div>
+                      );
+                    })
+                  : ""}
+              </Typography>
+            </Grid>
+          </Grid>
+        </Paper>
       </Grid>
     );
   }
@@ -173,6 +196,7 @@ class NextGame extends Component {
     });
 
     this.setState({
+      season: seasonRes.data(),
       nextGame: {
         gameNumber: filteredGames[0].gameNumber,
         date: new Date(

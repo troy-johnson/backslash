@@ -14,11 +14,13 @@ const styles = {
     margin: "15px"
   },
   season: {
-    minWidth: "40%",
+    minWidth: "65%",
     maxWidth: "100%"
   },
   game: {
-    margin: "15px"
+    // border: '1px solid orange',
+    marginTop: '5px',
+    marginBottom: "5px"
   },
   gameWin: {
     color: "green"
@@ -28,6 +30,9 @@ const styles = {
   },
   gameTie: {
     color: ""
+  },
+  border: {
+    // border: '1px solid yellowgreen'
   }
 };
 
@@ -51,8 +56,8 @@ class Seasons extends Component {
           return (
             <Paper className={classes.season} key={season.seasonNumber}>
               <Typography variant="h6">
-                Season #{season.seasonNumber} {season.wins} - {season.losses} -{" "}
-                {season.ties}
+                Season #{season.seasonNumber} ({season.wins} - {season.losses} -{" "}
+                {season.ties})
               </Typography>
               {season.games.map(game => {
                 let result =
@@ -73,13 +78,13 @@ class Seasons extends Component {
                     container
                     spacing={24}
                   >
-                    <Grid item xs={6}>
+                    <Grid className={classes.border} item xs={6}>
                       <Typography variant="subtitle2">
                         BackSlash vs. {game.opponent}
                       </Typography>
                     </Grid>
 
-                    <Grid item xs={6}>
+                    <Grid className={classes.border} item xs={6}>
                       <Typography
                         className={
                           result === "Win"
