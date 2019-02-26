@@ -6,17 +6,18 @@ import Grid from "@material-ui/core/Grid";
 import { Typography } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import PersonAddIcon from "@material-ui/icons/PersonAdd";
-// import InputLabel from "@material-ui/core/InputLabel";
-// import MenuItem from "@material-ui/core/MenuItem";
-// import FormControl from "@material-ui/core/FormControl";
-// import Select from "@material-ui/core/Select";
-// import Button from "@material-ui/core/Button";
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
+import Button from "@material-ui/core/Button";
+import Input from "@material-ui/core/Input";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import AppBar from "@material-ui/core/AppBar";
 import Dialog from "@material-ui/core/Dialog";
-// import DialogActions from "@material-ui/core/DialogActions";
-// import DialogContent from "@material-ui/core/DialogContent";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
 // import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
@@ -29,7 +30,7 @@ const styles = theme => ({
   nextGame: {
     minWidth: "65%",
     maxWidth: "100%",
-    border: "1px solid red",
+    // border: "1px solid red",
     padding: "12px"
   },
   players: {
@@ -58,7 +59,8 @@ const styles = theme => ({
   },
   formControl: {
     margin: theme.spacing.unit,
-    minWidth: 120
+    minWidth: 120,
+    flexGrow: '1'
   },
   tabsIndicator: {
     backgroundColor: "ghostwhite"
@@ -70,37 +72,9 @@ db.settings({
   timestampsInSnapshots: true
 });
 
-class AddPlayerModal extends Component {
-  handleClose = () => {
-    this.props.onClose(this.props.selectedValue);
-  };
-
-  handleListItemClick = value => {
-    this.props.onClose(value);
-  };
-
-  render() {
-    const { classes, onClose, selectedValue, ...other } = this.props;
-
-    return (
-      <Dialog
-        onClose={this.handleClose}
-        aria-labelledby="simple-dialog-title"
-        {...other}
-      >
-        <DialogTitle id="simple-dialog-title">
-          Add Player to {selectedValue}
-        </DialogTitle>
-        <div>Test</div>
-      </Dialog>
-    );
-  }
-}
-
-const AddPlayerModalWrapped = withStyles(styles)(AddPlayerModal);
-
 class NextGame extends Component {
   state = {
+    selectedPlayer: "",
     open: false,
     tabValue: 0,
     season: [],
@@ -116,51 +90,104 @@ class NextGame extends Component {
     }
   };
 
-  handleChange = (event, value) => {
+  handleTabChange = (event, value) => {
     this.setState({ tabValue: value });
+  }
+
+  handleChange = event => {
+    this.setState({ selectedPlayer: event.target.value });
   };
 
   handleClickOpen = () => {
-    this.setState({
-      open: true,
-    });
+    this.setState({ open: true });
   };
 
-  handleClose = value => {
+  handleClose = () => {
     this.setState({ open: false });
   };
 
-  render() {
-    const { nextGame, tabValue, season } = this.state;
-    const { classes, admin } = this.props;
-
-    // const addPlayerToGameRoster = async (playerId, seasonId) => {
-    //   const { season, nextGame } = this.state;
+    addPlayerToGameRoster = async (playerId, seasonId) => {
+      // const { season, nextGame } = this.state;
       // let roster = [];
       // let scratches = [];
       // console.log("season", season);
       // let game = season.games.find(e => e.gameNumber === nextGame.gameNumber);
       // console.log("game", game);
-      // await this.setState({
-      //   season.games
-      // })
+      // await this.setState({ season.games })
       // await db.collection("events")
-      //   .doc(seasonId)
-      //   .update({
-      //     games: games
-      //   }, { merge: true })
+      //         .doc(seasonId)
+      //         .update({ games: games }, { merge: true })
 
-      // Add player to state -> game roster
-      // Remove player from game scratches
-      // Remove player from state -> unassigned
-    // };
+    // Add player to state -> game roster
+    // Remove player from game scratches
+    // Remove player from state -> unassigned
+    };
 
-    // const addPlayerToGameScratches = id => {
-      // Add player to game scratches
-      // Add player to state -> scratches
-      // Remove player from game roster
-      // Remove player from state -> full roster
-    // };
+    addPlayerToGameScratches = id => {
+    // Add player to game scratches
+    // Add player to state -> scratches
+    // Remove player from game roster
+    // Remove player from state -> full roster
+    };
+
+  AddPlayerModal = props => {
+    const { type } = props;
+    const { nextGame } = this.state;
+    const { classes } = this.props;
+    return (
+      <div>
+        <IconButton
+          color="primary"
+          className={classes.button}
+          aria-label="Add to shopping cart"
+          onClick={this.handleClickOpen}
+        >
+          <PersonAddIcon />
+        </IconButton>
+        <Dialog
+          disableBackdropClick
+          disableEscapeKeyDown
+          open={this.state.open}
+          onClose={this.handleClose}
+        >
+          <DialogTitle>Add Player To {type}</DialogTitle>
+          <DialogContent>
+            <form className={classes.container}>
+              <FormControl className={classes.formControl}>
+                <InputLabel htmlFor="unassigned-players">Players</InputLabel>
+                <Select
+                  value={this.state.selectedPlayer}
+                  onChange={this.handleChange}
+                  input={<Input id="unassigned-players" />}
+                >
+                  {nextGame.unassigned.map(player => {
+                    return (
+                      <MenuItem key={player.id} value={player.id}>
+                        {player.name}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              </FormControl>
+            </form>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleClose} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={this.handleClose} color="primary">
+              Ok
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    );
+  };
+
+  render() {
+    const { nextGame, tabValue } = this.state;
+    const { classes, admin } = this.props;
+    const { AddPlayerModal } = this;
 
     return (
       <div>
@@ -189,37 +216,13 @@ class NextGame extends Component {
               </Grid>
 
               <Grid className={classes.players} container spacing={24}>
-                {/* <form autoComplete="off">
-                    <FormControl className={classes.formControl}>
-                      <InputLabel className= {classes.input} htmlFor="demo-controlled-open-select">
-                        Add Player
-                      </InputLabel>
-                      <Select
-                        open={this.state.open}
-                        onClose={this.handleClose}
-                        onOpen={this.handleOpen}
-                        value={this.state.age}
-                        onChange={this.handleChange}
-                        inputProps={{
-                          name: "age",
-                          id: "demo-controlled-open-select"
-                        }}
-                      >
-                      {nextGame.unassigned.map(player => {
-                        return (
-                          <MenuItem value={player.id}>{player.name}</MenuItem>
-                        )
-                      })}
-                      </Select>
-                    </FormControl>
-                  </form> */}
                 <div className={classes.tabs}>
                   <AppBar position="static">
                     <Tabs
                       className={classes.tabs}
                       value={tabValue}
                       classes={{ indicator: classes.tabsIndicator }}
-                      onChange={this.handleChange}
+                      onChange={this.handleTabChange}
                       variant="fullWidth"
                     >
                       <Tab label="Roster" />
@@ -231,23 +234,15 @@ class NextGame extends Component {
                     <Grid className={classes.playerList} item xs={6}>
                       <Typography variant="subtitle2">
                         {admin ? (
-                          <IconButton
-                            color="primary"
-                            className={classes.button}
-                            aria-label="Add to shopping cart"
-                            onClick={this.handleClickOpen}
-                          >
-                            <PersonAddIcon/>
-                          </IconButton>
+                          <AddPlayerModal
+                            type="Game Roster"
+                            open={this.state.open}
+                            onClose={this.handleClose}
+                          />
                         ) : (
                           ""
                         )}
-                        <AddPlayerModalWrapped
-                          selectedValue="Game Roster"
-                          season={season}
-                          open={this.state.open}
-                          onClose={this.handleClose}
-                        />
+
                         {nextGame.gameRoster
                           ? nextGame.gameRoster.map(player => {
                               return (
@@ -266,13 +261,11 @@ class NextGame extends Component {
                     <Grid className={classes.playerList} item xs={6}>
                       <Typography variant="subtitle2">
                         {admin ? (
-                          <IconButton
-                            color="primary"
-                            className={classes.button}
-                            aria-label="Add to shopping cart"
-                          >
-                            <PersonAddIcon />
-                          </IconButton>
+                          <AddPlayerModal
+                            type="Scratches"
+                            open={this.state.open}
+                            onClose={this.handleClose}
+                          />
                         ) : (
                           ""
                         )}
