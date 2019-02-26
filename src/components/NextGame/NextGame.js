@@ -60,7 +60,7 @@ const styles = theme => ({
   formControl: {
     margin: theme.spacing.unit,
     minWidth: 120,
-    flexGrow: '1'
+    flexGrow: "1"
   },
   tabsIndicator: {
     backgroundColor: "ghostwhite"
@@ -92,7 +92,7 @@ class NextGame extends Component {
 
   handleTabChange = (event, value) => {
     this.setState({ tabValue: value });
-  }
+  };
 
   handleChange = event => {
     this.setState({ selectedPlayer: event.target.value });
@@ -106,29 +106,21 @@ class NextGame extends Component {
     this.setState({ open: false });
   };
 
-    addPlayerToGameRoster = async (playerId, seasonId) => {
-      // const { season, nextGame } = this.state;
-      // let roster = [];
-      // let scratches = [];
-      // console.log("season", season);
-      // let game = season.games.find(e => e.gameNumber === nextGame.gameNumber);
-      // console.log("game", game);
-      // await this.setState({ season.games })
-      // await db.collection("events")
-      //         .doc(seasonId)
-      //         .update({ games: games }, { merge: true })
-
+  addPlayerToGame = async event => {
+    // const { season, nextGame } = this.state;
+    // let roster = [];
+    // let scratches = [];
+    // console.log("season", season);
+    // let game = season.games.find(e => e.gameNumber === nextGame.gameNumber);
+    // console.log("game", game);
+    // await this.setState({ season.games })
+    // await db.collection("events")
+    //         .doc(seasonId)
+    //         .update({ games: games }, { merge: true })
     // Add player to state -> game roster
     // Remove player from game scratches
     // Remove player from state -> unassigned
-    };
-
-    addPlayerToGameScratches = id => {
-    // Add player to game scratches
-    // Add player to state -> scratches
-    // Remove player from game roster
-    // Remove player from state -> full roster
-    };
+  };
 
   AddPlayerModal = props => {
     const { type } = props;
@@ -139,7 +131,7 @@ class NextGame extends Component {
         <IconButton
           color="primary"
           className={classes.button}
-          aria-label="Add to shopping cart"
+          aria-label={`Add player to ${type}`}
           onClick={this.handleClickOpen}
         >
           <PersonAddIcon />
@@ -150,12 +142,13 @@ class NextGame extends Component {
           open={this.state.open}
           onClose={this.handleClose}
         >
-          <DialogTitle>Add Player To {type}</DialogTitle>
+          <DialogTitle>Add Player to {type}</DialogTitle>
           <DialogContent>
-            <form className={classes.container}>
+            <form className={classes.container} onSubmit={this.addPlayerToGame}>
               <FormControl className={classes.formControl}>
                 <InputLabel htmlFor="unassigned-players">Players</InputLabel>
                 <Select
+                  autoWidth={true}
                   value={this.state.selectedPlayer}
                   onChange={this.handleChange}
                   input={<Input id="unassigned-players" />}
@@ -175,7 +168,7 @@ class NextGame extends Component {
             <Button onClick={this.handleClose} color="primary">
               Cancel
             </Button>
-            <Button onClick={this.handleClose} color="primary">
+            <Button type="submit" onClick={this.handleClose} color="primary">
               Ok
             </Button>
           </DialogActions>
