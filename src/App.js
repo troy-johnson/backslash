@@ -11,13 +11,13 @@ import firebase from "./config/firebase";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { withStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
-import { darkBlue, teal, darkRed } from "@material-ui/core/colors";
+import { indigo, teal, darkRed } from "@material-ui/core/colors";
 import { CssBaseline } from "@material-ui/core";
 import Hidden from "@material-ui/core/Hidden";
 // import withWidth from "@material-ui/core/withWidth";
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
-import LockIcon from "@material-ui/icons/Lock";
+import ListAltIcon from "@material-ui/icons/ListAlt";
 import EventIcon from "@material-ui/icons/Event";
 import GroupIcon from "@material-ui/icons/Group";
 
@@ -48,7 +48,7 @@ const theme = createMuiTheme({
   palette: {
     type: "dark",
     primary: teal,
-    secondary: darkBlue,
+    secondary: indigo,
     error: darkRed
   },
   status: {
@@ -129,8 +129,8 @@ class App extends Component {
                       label="Roster"
                       icon={<GroupIcon />} />
                     <BottomNavigationAction
-                      label="Admin"
-                      icon={<LockIcon />} />
+                      label="Seasons"
+                      icon={<ListAltIcon />} />
                   </BottomNavigation>
                 </Hidden>
               </div>

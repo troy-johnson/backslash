@@ -19,7 +19,7 @@ const styles = {
   },
   game: {
     // border: '1px solid orange',
-    marginTop: '5px',
+    marginTop: "5px",
     marginBottom: "5px"
   },
   gameWin: {
@@ -52,77 +52,80 @@ class Seasons extends Component {
 
     return (
       <Grid className={classes.root} container spacing={24} justify="center">
-        {seasons.map(season => {
-          return (
-            <Paper className={classes.season} key={season.seasonNumber}>
-              <Typography variant="h6">
-                Season #{season.seasonNumber} ({season.wins} - {season.losses} -{" "}
-                {season.ties})
-              </Typography>
-              {season.games.map(game => {
-                let result =
-                  game.backslashGoals > game.opponentGoals
-                    ? "Win"
-                    : game.backslashGoals < game.opponentGoals
-                    ? "Loss"
-                    : game.backslashGoals &&
-                      game.backslashGoals === game.opponentGoals
-                    ? "Tie"
-                    : !game.backslashGoals
-                    ? ""
-                    : "";
-                return (
-                  <Grid
-                    className={classes.game}
-                    key={game.gameNumber}
-                    container
-                    spacing={24}
-                  >
-                    <Grid className={classes.border} item xs={6}>
-                      <Typography variant="subtitle2">
-                        BackSlash vs. {game.opponent}
-                      </Typography>
-                    </Grid>
+        {seasons
+          .sort((a, b) => a.seasonNumber - b.seasonNumber)
+          .splice(1, seasons.length)
+          .map(season => {
+            return (
+              <Paper className={classes.season} key={season.seasonNumber}>
+                <Typography variant="h6">
+                  Season #{season.seasonNumber} ({season.wins} - {season.losses}{" "}
+                  - {season.ties})
+                </Typography>
+                {season.games.map(game => {
+                  let result =
+                    game.backslashGoals > game.opponentGoals
+                      ? "Win"
+                      : game.backslashGoals < game.opponentGoals
+                      ? "Loss"
+                      : game.backslashGoals &&
+                        game.backslashGoals === game.opponentGoals
+                      ? "Tie"
+                      : !game.backslashGoals
+                      ? ""
+                      : "";
+                  return (
+                    <Grid
+                      className={classes.game}
+                      key={game.gameNumber}
+                      container
+                      spacing={24}
+                    >
+                      <Grid className={classes.border} item xs={6}>
+                        <Typography variant="subtitle2">
+                          BackSlash vs. {game.opponent}
+                        </Typography>
+                      </Grid>
 
-                    <Grid className={classes.border} item xs={6}>
-                      <Typography
-                        className={
-                          result === "Win"
-                            ? classes.gameWin
+                      <Grid className={classes.border} item xs={6}>
+                        <Typography
+                          className={
+                            result === "Win"
+                              ? classes.gameWin
+                              : result === "Loss"
+                              ? classes.gameLoss
+                              : result === "Tie"
+                              ? classes.gameTie
+                              : result === ""
+                              ? ""
+                              : ""
+                          }
+                          variant="subtitle2"
+                        >
+                          {result === "Win"
+                            ? "W"
                             : result === "Loss"
-                            ? classes.gameLoss
+                            ? "L"
                             : result === "Tie"
-                            ? classes.gameTie
+                            ? "T"
                             : result === ""
                             ? ""
-                            : ""
-                        }
-                        variant="subtitle2"
-                      >
-                        {result === "Win"
-                          ? "W"
-                          : result === "Loss"
-                          ? "L"
-                          : result === "Tie"
-                          ? "T"
-                          : result === ""
-                          ? ""
-                          : ""}{" "}
-                        {game.backslashGoals}{" "}
-                        {result
-                          ? "-"
-                          : new Date(
-                              game.date.seconds * 1000
-                            ).toLocaleDateString()}{" "}
-                        {game.opponentGoals}
-                      </Typography>
+                            : ""}{" "}
+                          {game.backslashGoals}{" "}
+                          {result
+                            ? "-"
+                            : new Date(
+                                game.date.seconds * 1000
+                              ).toLocaleDateString()}{" "}
+                          {game.opponentGoals}
+                        </Typography>
+                      </Grid>
                     </Grid>
-                  </Grid>
-                );
-              })}
-            </Paper>
-          );
-        })}
+                  );
+                })}
+              </Paper>
+            );
+          })}
       </Grid>
     );
   }
