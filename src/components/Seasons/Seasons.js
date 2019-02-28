@@ -7,18 +7,32 @@ import Paper from "@material-ui/core/Paper";
 import { Typography } from "@material-ui/core";
 // import { Typography, IconButton } from "@material-ui/core"
 
-const styles = {
+const styles = theme => ({
   root: {
     // border: "1px solid lightblue",
     textAlign: "center",
-    margin: "15px"
+    margin: "15px",
+    // width: "85%",
+    // maxWidth: "100%",
+    flexGrow: 1
   },
   season: {
-    minWidth: "65%",
-    maxWidth: "100%"
+    // border: '1px solid green',
+    // flexGrow: 1,
+    [theme.breakpoints.down('sm')]: {
+      flexBasis: '100%',
+    },
+    [theme.breakpoints.up('md')]: {
+      flexBasis: '48.75%',
+    },
+    [theme.breakpoints.up('lg')]: {
+      flexBasis: '31.5%',
+    },
+    // maxWidth: "86%"
   },
   game: {
     // border: '1px solid orange',
+    alignItems: 'center',
     marginTop: "5px",
     marginBottom: "5px"
   },
@@ -34,7 +48,7 @@ const styles = {
   border: {
     // border: '1px solid yellowgreen'
   }
-};
+});
 
 const db = firebase.firestore();
 db.settings({
@@ -51,7 +65,7 @@ class Seasons extends Component {
     const { classes } = this.props;
 
     return (
-      <Grid className={classes.root} container spacing={24} justify="center">
+      <Grid className={classes.root} container justify="center">
         {seasons
           .sort((a, b) => a.seasonNumber - b.seasonNumber)
           .splice(1, seasons.length)
@@ -79,10 +93,9 @@ class Seasons extends Component {
                       className={classes.game}
                       key={game.gameNumber}
                       container
-                      spacing={24}
                     >
                       <Grid className={classes.border} item xs={6}>
-                        <Typography variant="subtitle2">
+                        <Typography variant="subtitle1">
                           BackSlash vs. {game.opponent}
                         </Typography>
                       </Grid>
@@ -100,7 +113,7 @@ class Seasons extends Component {
                               ? ""
                               : ""
                           }
-                          variant="subtitle2"
+                          variant="subtitle1"
                         >
                           {result === "Win"
                             ? "W"

@@ -142,6 +142,29 @@ class NextGame extends Component {
       .set({ games: season.games }, { merge: true });
   };
 
+  addPlayerToScratches = async event => {
+    event.preventDefault();
+    const { season, nextGame, selectedPlayer } = this.state;
+    let game = await season.games.find(
+      e => e.gameNumber === nextGame.gameNumber
+    );
+    await game.scratches.push(selectedPlayer);
+    let unassigned = nextGame.unassigned.filter(
+      e => e.id !== selectedPlayer.id
+    );
+    this.setState({
+      nextGame: {
+        ...nextGame,
+        scratches: game.scratches,
+        unassigned
+      }
+    });
+    await db
+      .collection("events")
+      .doc("1yRF6Tjxre9jTUut7eFT")
+      .set({ games: season.games }, { merge: true });
+  };
+
   AddPlayerModal = props => {
     const { type } = props;
     const { nextGame, selectedPlayer } = this.state;
@@ -168,7 +191,6 @@ class NextGame extends Component {
               id="addPlayer"
               className={classes.container}
               onSubmit={this.addPlayerToGame}
-              playerooperation={type}
             >
               <FormControl className={classes.formControl}>
                 <InputLabel>Players</InputLabel>
