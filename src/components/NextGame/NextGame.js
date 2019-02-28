@@ -6,12 +6,12 @@ import Grid from "@material-ui/core/Grid";
 import { Typography } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import PersonAddIcon from "@material-ui/icons/PersonAdd";
+import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import Button from "@material-ui/core/Button";
-import Input from "@material-ui/core/Input";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import AppBar from "@material-ui/core/AppBar";
@@ -20,16 +20,18 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 // import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import Fab from "@material-ui/core/Fab";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 
 const styles = theme => ({
   root: {
     // border: '1px solid lightblue',
-    textAlign: "center",
-    margin: "15px"
+    textAlign: "center"
   },
   nextGame: {
-    minWidth: "65%",
-    maxWidth: "100%",
     // border: "1px solid red",
     padding: "12px"
   },
@@ -39,11 +41,22 @@ const styles = theme => ({
     backgroundColor: theme.palette.secondary
   },
   border: {
-    // border: "1px solid yellow"
+    border: "1px solid red",
+    display: 'flex',
+    justifyContent: 'flex-start',
+    // flexDirection: 'column',
+    width: "100%",
+  },
+  list: {
+    width: '100%',
+    maxHeight: '500px',
+    overflow: 'scroll'
   },
   playerList: {
     display: "flex",
-    justifyContent: "column"
+    flexDirection: "column",
+    alignItems: "flex-end"
+    // border: "1px solid green"
   },
   input: {
     width: "100%"
@@ -107,35 +120,42 @@ class NextGame extends Component {
   };
 
   addPlayerToGame = async event => {
-    // const { season, nextGame } = this.state;
-    // let roster = [];
-    // let scratches = [];
-    // console.log("season", season);
-    // let game = season.games.find(e => e.gameNumber === nextGame.gameNumber);
-    // console.log("game", game);
-    // await this.setState({ season.games })
-    // await db.collection("events")
-    //         .doc(seasonId)
-    //         .update({ games: games }, { merge: true })
-    // Add player to state -> game roster
-    // Remove player from game scratches
-    // Remove player from state -> unassigned
+    event.preventDefault();
+    const { season, nextGame, selectedPlayer } = this.state;
+    let game = await season.games.find(
+      e => e.gameNumber === nextGame.gameNumber
+    );
+    await game.roster.push(selectedPlayer);
+    let unassigned = nextGame.unassigned.filter(
+      e => e.id !== selectedPlayer.id
+    );
+    this.setState({
+      nextGame: {
+        ...nextGame,
+        gameRoster: game.roster,
+        unassigned
+      }
+    });
+    await db
+      .collection("events")
+      .doc("1yRF6Tjxre9jTUut7eFT")
+      .set({ games: season.games }, { merge: true });
   };
 
   AddPlayerModal = props => {
     const { type } = props;
-    const { nextGame } = this.state;
+    const { nextGame, selectedPlayer } = this.state;
     const { classes } = this.props;
     return (
       <div>
-        <IconButton
+        <Fab
           color="primary"
-          className={classes.button}
-          aria-label={`Add player to ${type}`}
           onClick={this.handleClickOpen}
+          aria-label={`Add player to ${type}`}
         >
           <PersonAddIcon />
-        </IconButton>
+        </Fab>
+
         <Dialog
           disableBackdropClick
           disableEscapeKeyDown
@@ -144,18 +164,22 @@ class NextGame extends Component {
         >
           <DialogTitle>Add Player to {type}</DialogTitle>
           <DialogContent>
-            <form className={classes.container} onSubmit={this.addPlayerToGame}>
+            <form
+              id="addPlayer"
+              className={classes.container}
+              onSubmit={this.addPlayerToGame}
+              playerooperation={type}
+            >
               <FormControl className={classes.formControl}>
-                <InputLabel htmlFor="unassigned-players">Players</InputLabel>
+                <InputLabel>Players</InputLabel>
                 <Select
                   autoWidth={true}
-                  value={this.state.selectedPlayer}
+                  value={selectedPlayer}
                   onChange={this.handleChange}
-                  input={<Input id="unassigned-players" />}
                 >
                   {nextGame.unassigned.map(player => {
                     return (
-                      <MenuItem key={player.id} value={player.id}>
+                      <MenuItem key={player.id} value={player}>
                         {player.name}
                       </MenuItem>
                     );
@@ -168,7 +192,12 @@ class NextGame extends Component {
             <Button onClick={this.handleClose} color="primary">
               Cancel
             </Button>
-            <Button type="submit" onClick={this.handleClose} color="primary">
+            <Button
+              form="addPlayer"
+              type="submit"
+              onClick={this.handleClose}
+              color="primary"
+            >
               Ok
             </Button>
           </DialogActions>
@@ -192,19 +221,19 @@ class NextGame extends Component {
             justify="center"
           >
             <Paper className={classes.nextGame}>
-              <Grid className={classes.border} item xs={12}>
+              <Grid item xs={12}>
                 <Typography variant="h4">
                   BackSlash vs. {nextGame.opponent}
                 </Typography>
               </Grid>
 
-              <Grid className={classes.border} item xs={12}>
+              <Grid item xs={12}>
                 <Typography variant="h6">
                   {nextGame.date} at {nextGame.time}
                 </Typography>
               </Grid>
 
-              <Grid className={classes.border} item xs={12}>
+              <Grid item xs={12}>
                 <Typography variant="h6">{nextGame.location}</Typography>
               </Grid>
 
@@ -224,55 +253,80 @@ class NextGame extends Component {
                   </AppBar>
 
                   {tabValue === 0 && (
-                    <Grid className={classes.playerList} item xs={6}>
-                      <Typography variant="subtitle2">
-                        {admin ? (
-                          <AddPlayerModal
-                            type="Game Roster"
-                            open={this.state.open}
-                            onClose={this.handleClose}
-                          />
-                        ) : (
-                          ""
-                        )}
+                    <Grid className={classes.playerList} item>
+                      <Typography variant="subtitle2" />
 
-                        {nextGame.gameRoster
-                          ? nextGame.gameRoster.map(player => {
-                              return (
-                                <div key={player.id}>
-                                  No.: {player.jerseyNumber}
-                                  Name: {player.name}
-                                </div>
-                              );
-                            })
-                          : ""}
-                      </Typography>
+                      {nextGame.gameRoster ? (
+                        <List className={classes.list} disablePadding={false}>
+                          {nextGame.gameRoster.sort((a, b) => a.lastName.localeCompare(b.lastName)).map(player => {
+                            return (
+                              <ListItem alignItems="flex-start" divider={true} key={player.id}>
+                                <ListItemText primary={player.jerseyNumber} />
+                                <ListItemText primary={player.name} />
+                                {admin ? (
+                                  <ListItemSecondaryAction>
+                                    <IconButton aria-label="Comments">
+                                      <RemoveCircleOutlineIcon color="error" />
+                                    </IconButton>
+                                  </ListItemSecondaryAction>
+                                ) : (
+                                  ""
+                                )}
+                              </ListItem>
+                            );
+                          })}
+                        </List>
+                      ) : (
+                        ""
+                      )}
+                      {admin ? (
+                        <AddPlayerModal
+                          type="Game Roster"
+                          open={this.state.open}
+                          onClose={this.handleClose}
+                        />
+                      ) : (
+                        ""
+                      )}
                     </Grid>
                   )}
 
                   {tabValue === 1 && (
-                    <Grid className={classes.playerList} item xs={6}>
-                      <Typography variant="subtitle2">
-                        {admin ? (
-                          <AddPlayerModal
-                            type="Scratches"
-                            open={this.state.open}
-                            onClose={this.handleClose}
-                          />
-                        ) : (
-                          ""
-                        )}
-                        {nextGame.scratches
-                          ? nextGame.scratches.map(player => {
-                              return (
-                                <div key={player.id}>
-                                  No.: {player.jerseyNumber}
-                                  Name: {player.name}
-                                </div>
-                              );
-                            })
-                          : ""}
-                      </Typography>
+                    <Grid className={classes.playerList} item>
+                      <Typography variant="subtitle2" />
+
+                      {nextGame.scratches ? (
+                        <List>
+                          {nextGame.scratches.sort((a, b) => a.lastName.localeCompare(b.lastName)).map(player => {
+                            return (
+                              <ListItem key={player.id}>
+                                <ListItemText primary={player.jerseyNumber} />
+                                <ListItemText primary={player.name} />
+                                {admin ? (
+                                  <ListItemSecondaryAction>
+                                    <IconButton aria-label="Comments">
+                                      <RemoveCircleOutlineIcon color="error" />
+                                    </IconButton>
+                                  </ListItemSecondaryAction>
+                                ) : (
+                                  ""
+                                )}
+                              </ListItem>
+                            );
+                          })}
+                        </List>
+                      ) : (
+                        ""
+                      )}
+                      {admin ? (
+                        <AddPlayerModal
+                          type="Scratches"
+                          open={this.state.open}
+                          onClose={this.handleClose}
+                        />
+                      ) : (
+                        ""
+                      )}
                     </Grid>
                   )}
                 </div>
@@ -310,21 +364,25 @@ class NextGame extends Component {
 
     if (filteredGames && filteredGames.length > 0) {
       for (let i = 0; i < filteredGames[0].roster.length; i++) {
-        const playerRes = await docRef.doc(filteredGames[0].roster[i]).get();
+        const playerRes = await docRef.doc(filteredGames[0].roster[i].id).get();
         const player = {
           id: playerRes.id,
           name: `${playerRes.data().firstName} ${playerRes.data().lastName}`,
-          jerseyNumber: playerRes.data().jerseyNumber
+          jerseyNumber: playerRes.data().jerseyNumber,
+          lastName: playerRes.data().lastName
         };
         gameRoster.push(player);
       }
 
       for (let i = 0; i < filteredGames[0].scratches.length; i++) {
-        const playerRes = await docRef.doc(filteredGames[0].scratches[i]).get();
+        const playerRes = await docRef
+          .doc(filteredGames[0].scratches[i].id)
+          .get();
         const player = {
           id: playerRes.id,
           name: `${playerRes.data().firstName} ${playerRes.data().lastName}`,
-          jerseyNumber: playerRes.data().jerseyNumber
+          jerseyNumber: playerRes.data().jerseyNumber,
+          lastName: playerRes.data().lastName
         };
         scratches.push(player);
       }
@@ -334,13 +392,14 @@ class NextGame extends Component {
       const rosterRes = await docRef.get();
       rosterRes.forEach(doc => {
         let player =
-          gameRoster.find(e => e.id === doc.data().id) ||
-          scratches.find(e => e.id === doc.data().id);
-        if (doc.data().status === "Active" && !player) {
+          gameRoster.find(e => e.id === doc.id) ||
+          scratches.find(e => e.id === doc.id);
+        if (doc.data().status === 'Active' && !player) {
           let unassignedPlayer = {
             ...doc.data(),
             id: doc.id,
-            name: `${doc.data().firstName} ${doc.data().lastName}`
+            name: `${doc.data().firstName} ${doc.data().lastName}`,
+            lastName: doc.data().lastName
           };
           unassigned.push(unassignedPlayer);
         }
@@ -360,7 +419,7 @@ class NextGame extends Component {
           opponent: filteredGames[0].opponent,
           gameRoster: gameRoster,
           scratches: scratches,
-          unassigned: unassigned
+          unassigned: unassigned.sort((a, b) => a.lastName.localeCompare(b.lastName))
         }
       });
     }

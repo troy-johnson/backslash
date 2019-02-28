@@ -69,7 +69,6 @@ class Login extends Component {
       <div>
         <Button
           variant="outlined"
-          color="primary"
           onClick={this.handleClickOpen}
         >
           Admin Login

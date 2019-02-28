@@ -133,7 +133,7 @@ class AddPlayer extends Component {
           />
           <button children="Add Player" />
         </form>
-        </Grid>
+      </Grid>
     );
   }
 }

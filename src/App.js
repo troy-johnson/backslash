@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import {
   BrowserRouter as Router,
   Route,
-  Switch,
+  Switch
   // Redirect
 } from "react-router-dom";
 
@@ -20,24 +20,19 @@ import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
 import ListAltIcon from "@material-ui/icons/ListAlt";
 import EventIcon from "@material-ui/icons/Event";
 import GroupIcon from "@material-ui/icons/Group";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
+import Link from "@material-ui/core/Link";
+import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
+import MenuIcon from "@material-ui/icons/Menu";
 
 import Login from "./components/Login/Login";
 import Logout from "./components/Logout/Logout";
 import Home from "./components/Home/Home";
 import Admin from "./components/Admin/Admin";
 import Roster from "./components/Roster/Roster";
-
-const styles = {
-  root: {},
-  routes: {
-    marginBottom: '60px'
-  },
-  stickToBottom: {
-    width: "100%",
-    position: "fixed",
-    bottom: 0
-  }
-};
 
 const db = firebase.firestore();
 db.settings({
@@ -56,6 +51,33 @@ const theme = createMuiTheme({
   },
   typography: {
     useNextVariants: true
+  }
+});
+
+const styles = theme => ({
+  root: {
+    width: "100%"
+  },
+  grow: {
+    flexGrow: 1
+  },
+  appBar: {
+    marginBottom: "20px"
+  },
+  routes: {
+    marginBottom: "60px"
+  },
+  button: {
+    marginRight: theme.spacing.unit
+  },
+  buttons: {
+    display: "flex",
+    justifyContent: "row"
+  },
+  stickToBottom: {
+    width: "100%",
+    position: "fixed",
+    bottom: 0
   }
 });
 
@@ -86,15 +108,42 @@ class App extends Component {
         <CssBaseline />
         <Grid container alignItems="center" justify="center">
           <div className={classes.root}>
-            <a href="/">BackSlash</a>
+            <AppBar className={classes.appBar} position="static">
+              <Toolbar>
+                <IconButton
+                  className={classes.menuButton}
+                  color="inherit"
+                  aria-label="Menu"
+                >
+                  <MenuIcon />
+                </IconButton>
+                <Typography className={classes.grow}>
+                  <Link
+                    href="/"
+                    variant="h6"
+                    color="inherit"
+                  >
+                    BackSlash
+                  </Link>
+                </Typography>
+                {authenticated ? (
+                  <div className={classes.buttons}>
+                    <Button
+                      variant="outlined"
+                      href="/admin"
+                      className={classes.button}
+                    >
+                      Admin
+                    </Button>
+                    <Logout />
+                  </div>
+                ) : (
+                  <Login />
+                )}
+              </Toolbar>
+            </AppBar>
+
             <div className="main-component">
-              {authenticated ? (
-                <div>
-                  <a href="/admin">Admin</a> <Logout />
-                </div>
-              ) : (
-                <Login />
-              )}
               <div className={classes.routes}>
                 <Router>
                   <Switch>
@@ -122,15 +171,18 @@ class App extends Component {
                     onChange={this.handleChange}
                     showLabels
                   >
-                    <BottomNavigationAction 
-                      label="Next Game" 
-                      icon={<EventIcon />} />
+                    <BottomNavigationAction
+                      label="Next Game"
+                      icon={<EventIcon />}
+                    />
                     <BottomNavigationAction
                       label="Roster"
-                      icon={<GroupIcon />} />
+                      icon={<GroupIcon />}
+                    />
                     <BottomNavigationAction
                       label="Seasons"
-                      icon={<ListAltIcon />} />
+                      icon={<ListAltIcon />}
+                    />
                   </BottomNavigation>
                 </Hidden>
               </div>

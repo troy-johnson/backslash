@@ -16,7 +16,7 @@ class Logout extends Component {
 
   render() {
     return (
-      <Button variant="outlined" color="primary" onClick={this.logOutUser}>
+      <Button variant="outlined" onClick={this.logOutUser}>
         Logout
       </Button>
     );
