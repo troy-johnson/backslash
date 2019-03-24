@@ -91,6 +91,7 @@ class NextGame extends Component {
     open: false,
     tabValue: 0,
     season: [],
+    currentSeasonId: '1yRF6Tjxre9jTUut7eFT',
     nextGame: {
       gameNumber: null,
       date: "",
@@ -121,7 +122,7 @@ class NextGame extends Component {
 
   addPlayerToGame = async event => {
     event.preventDefault();
-    const { season, nextGame, selectedPlayer } = this.state;
+    const { season, nextGame, selectedPlayer, currentSeasonId } = this.state;
     let game = await season.games.find(
       e => e.gameNumber === nextGame.gameNumber
     );
@@ -138,13 +139,38 @@ class NextGame extends Component {
     });
     await db
       .collection("events")
-      .doc("1yRF6Tjxre9jTUut7eFT")
+      .doc(currentSeasonId)
       .set({ games: season.games }, { merge: true });
   };
 
+  removePlayerFromGame = async player => {
+    // event.preventDefault();
+    const { season, nextGame, currentSeasonId } = this.state;
+    let game = await season.games.find(
+      e => e.gameNumber === nextGame.gameNumber
+    );
+    let newGameRoster = await game.roster.filter(e => e.id !== player.id)
+    let newSeason = season.games;
+    newSeason.find(e => e.gameNumber === nextGame.gameNumber).roster = newGameRoster;
+    let unassigned = nextGame.unassigned
+    await unassigned.push(player);
+    unassigned.sort((a, b) => a.lastName.localeCompare(b.lastName));
+    this.setState({
+      nextGame: {
+        ...nextGame,
+        gameRoster: newGameRoster,
+        unassigned
+      }
+    });
+    await db
+    .collection("events")
+    .doc(currentSeasonId)
+    .set({ games: newSeason }, { merge: true });
+  }
+
   addPlayerToScratches = async event => {
     event.preventDefault();
-    const { season, nextGame, selectedPlayer } = this.state;
+    const { season, nextGame, selectedPlayer, currentSeasonId } = this.state;
     let game = await season.games.find(
       e => e.gameNumber === nextGame.gameNumber
     );
@@ -161,9 +187,34 @@ class NextGame extends Component {
     });
     await db
       .collection("events")
-      .doc("1yRF6Tjxre9jTUut7eFT")
+      .doc(currentSeasonId)
       .set({ games: season.games }, { merge: true });
   };
+
+  removePlayerFromScratches = async player => {
+    // event.preventDefault();
+    const { season, nextGame, currentSeasonId } = this.state;
+    let game = await season.games.find(
+      e => e.gameNumber === nextGame.gameNumber
+    );
+    let newGameScratches = await game.scratches.filter(e => e.id !== player.id)
+    let newSeason = season.games;
+    newSeason.find(e => e.gameNumber === nextGame.gameNumber).scratches = newGameScratches;
+    let unassigned = nextGame.unassigned
+    await unassigned.push(player);
+    unassigned.sort((a, b) => a.lastName.localeCompare(b.lastName));
+    this.setState({
+      nextGame: {
+        ...nextGame,
+        scratches: newGameScratches,
+        unassigned
+      }
+    });
+    await db
+    .collection("events")
+    .doc(currentSeasonId)
+    .set({ games: newSeason }, { merge: true });
+  }
 
   AddPlayerModal = props => {
     const { type } = props;
@@ -190,7 +241,7 @@ class NextGame extends Component {
             <form
               id="addPlayer"
               className={classes.container}
-              onSubmit={this.addPlayerToGame}
+              onSubmit={type === 'Game Roster' ? this.addPlayerToGame : this.addPlayerToScratches}
             >
               <FormControl className={classes.formControl}>
                 <InputLabel>Players</InputLabel>
@@ -287,7 +338,7 @@ class NextGame extends Component {
                                 <ListItemText primary={player.name} />
                                 {admin ? (
                                   <ListItemSecondaryAction>
-                                    <IconButton aria-label="Comments">
+                                    <IconButton onClick={() => this.removePlayerFromGame(player)} aria-label="Comments">
                                       <RemoveCircleOutlineIcon color="error" />
                                     </IconButton>
                                   </ListItemSecondaryAction>
@@ -318,15 +369,15 @@ class NextGame extends Component {
                       <Typography variant="subtitle2" />
 
                       {nextGame.scratches ? (
-                        <List>
+                        <List className={classes.list} disablePadding={false}>
                           {nextGame.scratches.sort((a, b) => a.lastName.localeCompare(b.lastName)).map(player => {
                             return (
-                              <ListItem key={player.id}>
+                              <ListItem alignItems="flex-start" divider={true} key={player.id}>
                                 <ListItemText primary={player.jerseyNumber} />
                                 <ListItemText primary={player.name} />
                                 {admin ? (
                                   <ListItemSecondaryAction>
-                                    <IconButton aria-label="Comments">
+                                    <IconButton onClick={() => this.removePlayerFromScratches(player)} aria-label="Comments">
                                       <RemoveCircleOutlineIcon color="error" />
                                     </IconButton>
                                   </ListItemSecondaryAction>
@@ -363,9 +414,19 @@ class NextGame extends Component {
   }
 
   async componentDidMount() {
+    const seasons = await db.collection("events").get();
+    const seasonArray = [];
+    seasons.forEach(doc => seasonArray.push({
+      ...doc.data(),
+      id: doc.id
+    }))
+    seasonArray.sort((a, b) => b.endDate.seconds - a.endDate.seconds);
+    this.setState({
+      currentSeasonId: seasonArray[0].id
+    })
     const seasonRes = await db
       .collection("events")
-      .doc("1yRF6Tjxre9jTUut7eFT")
+      .doc(seasonArray[0].id)
       .get();
     const filteredGames = await seasonRes
       .data()
