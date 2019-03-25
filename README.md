@@ -1,2 +1,2 @@
 # Backslash FC
-## Game info and scheudling tool. Visit @ https://backslash.sciraxe.com
+## Game info and scheduling tool. Visit @ https://backslash.sciraxe.com
