@@ -3,6 +3,7 @@ import { withStyles } from "@material-ui/core/styles";
 import firebase from "../../config/firebase";
 // import Roster from "../Roster/Roster";
 import NextGame from "../NextGame/NextGame";
+import EditSeason from "../EditSeason/EditSeason";
 // import * as PlayerService from "../../services/player";
 // import * as SeasonService from "../../services/season";
 
@@ -25,6 +26,7 @@ class Admin extends Component {
     return (
       <div className={this.props.classes.root}>
         <NextGame admin={true} />
+        <EditSeason />
         {/* <Roster admin={true} /> */}
       </div>
     );

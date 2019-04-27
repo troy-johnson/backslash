@@ -1,11 +1,9 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import firebase from "../../config/firebase";
-
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import { Typography } from "@material-ui/core";
-// import { Typography, IconButton } from "@material-ui/core"
 
 const styles = theme => ({
   root: {
@@ -67,8 +65,8 @@ class Seasons extends Component {
     return (
       <Grid className={classes.root} container justify="center">
         {seasons
-          .sort((a, b) => a.seasonNumber - b.seasonNumber)
-          .splice(1, seasons.length)
+          .sort((a, b) => b.seasonNumber - a.seasonNumber)
+          .slice(0, 1)
           .map(season => {
             return (
               <Paper className={classes.season} key={season.seasonNumber}>
